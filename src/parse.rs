@@ -475,6 +475,7 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
     });
 
     doc.namespaces.push_ns(Some("xml"), Cow::Borrowed(NS_XML_URI));
+    pd.ns_start_idx = doc.namespaces.len();
 
     let parser = xmlparser::Tokenizer::from(text);
     let parent_id = doc.root().id;
