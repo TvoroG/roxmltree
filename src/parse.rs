@@ -221,6 +221,7 @@ pub struct ParsingOptions {
     /// Default: false
     pub allow_dtd: bool,
 
+    /// Predefined namespaces
     pub namespaces: Vec<Namespace<'static>>,
 }
 
