@@ -22,6 +22,7 @@ use crate::{
     NodeKind,
     PI,
     ShortRange,
+    Namespace,
 };
 
 
@@ -203,7 +204,7 @@ impl std::error::Error for Error {
 
 
 /// Parsing options.
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct ParsingOptions {
     /// Allow DTD parsing.
     ///
@@ -219,12 +220,15 @@ pub struct ParsingOptions {
     ///
     /// Default: false
     pub allow_dtd: bool,
+
+    pub namespaces: Vec<Namespace<'static>>,
 }
 
 impl Default for ParsingOptions {
     fn default() -> Self {
         ParsingOptions {
             allow_dtd: false,
+            namespaces: Vec::new(),
         }
     }
 }
@@ -456,7 +460,7 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
         text,
         nodes: Vec::with_capacity(nodes_capacity),
         attrs: Vec::with_capacity(attributes_capacity),
-        namespaces: Namespaces(Vec::new()),
+        namespaces: Namespaces(pd.opt.namespaces.clone()),
     };
 
     // Add a root node.

@@ -35,6 +35,7 @@ fn actual_test(path: &str) {
 
     let opt = ParsingOptions {
         allow_dtd: true,
+        namespaces: Vec::new(),
     };
 
     let input_xml = load_file(&path);

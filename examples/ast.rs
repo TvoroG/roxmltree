@@ -11,6 +11,7 @@ fn main() {
     // Allow DTD for this example.
     let opt = roxmltree::ParsingOptions {
         allow_dtd: true,
+        namespaces: Vec::new(),
     };
 
     match roxmltree::Document::parse_with_options(&text, opt) {
