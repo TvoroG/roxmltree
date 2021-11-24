@@ -222,7 +222,7 @@ pub struct ParsingOptions {
     pub allow_dtd: bool,
 
     /// Predefined namespaces
-    pub namespaces: Vec<Namespace<'static>>,
+    pub namespaces: Vec<(&'static str, &'static str)>,
 }
 
 impl Default for ParsingOptions {
@@ -461,7 +461,7 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
         text,
         nodes: Vec::with_capacity(nodes_capacity),
         attrs: Vec::with_capacity(attributes_capacity),
-        namespaces: Namespaces(pd.opt.namespaces.clone()),
+        namespaces: Namespaces(Vec::new()),
     };
 
     // Add a root node.
@@ -475,7 +475,9 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
     });
 
     doc.namespaces.push_ns(Some("xml"), Cow::Borrowed(NS_XML_URI));
-    pd.ns_start_idx = doc.namespaces.len();
+    for (name, uri) in pd.opt.namespaces.drain(..).as_slice().iter() {
+        doc.namespaces.push_ns(Some(*name), Cow::Borrowed(*uri));
+    }
 
     let parser = xmlparser::Tokenizer::from(text);
     let parent_id = doc.root().id;

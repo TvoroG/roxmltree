@@ -275,3 +275,20 @@ fn tag_name_lifetime() {
     let root = doc.root_element();
     assert_eq!(get_tag_name(&root), "e");
 }
+
+#[test]
+fn predefined_namespaces() {
+    let data = "<root>\
+  <yandex:full-text>foo</yandex:full-text>
+</root>";
+
+    let opts = ParsingOptions {
+        allow_dtd: true,
+        namespaces: vec![
+            ("yandex", "http://news.yandex.ru"),
+        ],
+    };
+
+    let res = Document::parse_with_options(data, opts);
+    assert!(res.is_ok());
+}

@@ -504,11 +504,6 @@ pub struct Namespace<'input> {
 }
 
 impl<'input> Namespace<'input> {
-    /// Returns new namesapce
-    pub fn new(name: Option<&'input str>, uri: Cow<'input, str>) -> Self {
-        Namespace { name, uri }
-    }
-
     /// Returns namespace name/prefix.
     ///
     /// # Examples
