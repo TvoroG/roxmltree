@@ -328,6 +328,7 @@ struct ParserData<'input> {
     opt: ParsingOptions,
     attrs_start_idx: usize,
     ns_start_idx: usize,
+    ns_predefined_start_idx: usize,
     tmp_attrs: Vec<AttributeData<'input>>,
     awaiting_subtree: Vec<NodeId>,
     entities: Vec<Entity<'input>>,
@@ -445,6 +446,7 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
         opt,
         attrs_start_idx: 0,
         ns_start_idx: 1,
+        ns_predefined_start_idx: 1,
         tmp_attrs: Vec::with_capacity(16),
         entities: Vec::new(),
         awaiting_subtree: Vec::new(),
@@ -478,6 +480,7 @@ fn parse(text: &str, opt: ParsingOptions) -> Result<Document, Error> {
     for (name, uri) in pd.opt.namespaces.drain(..).as_slice().iter() {
         doc.namespaces.push_ns(Some(*name), Cow::Borrowed(*uri));
     }
+    pd.ns_predefined_start_idx = doc.namespaces.len();
 
     let parser = xmlparser::Tokenizer::from(text);
     let parent_id = doc.root().id;
@@ -605,7 +608,8 @@ fn process_attribute<'input>(
         }
 
         // Check for duplicated namespaces.
-        if doc.namespaces.exists(pd.ns_start_idx, Some(local.as_str())) {
+        let ns_start_idx = core::cmp::max(pd.ns_start_idx, pd.ns_predefined_start_idx);
+        if doc.namespaces.exists(ns_start_idx, Some(local.as_str())) {
             let pos = err_pos_from_qname(doc.text, prefix, local);
             return Err(Error::DuplicatedNamespace(local.as_str().to_string(), pos));
         }
